@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sexter Daily Check-In — Agent ID</title>
+<meta name="description" content="Check-in harian on-chain khusus pemegang SPACE ID Agent ID di BNB Chain. Bangun streak, naikkan peringkat di leaderboard. Gratis — cuma bayar gas." />
+<style>
+  :root {
+    --bg: #0b0e14; --card: #141926; --line: #232c42; --text: #e8ecf4;
+    --muted: #93a0b8; --gold: #f0b90b; --green: #2ecc71; --red: #e74c3c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 20px 14px 48px; }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 20px; }
+  header .badge { display: inline-block; background: rgba(240,185,11,.12); color: var(--gold); border: 1px solid rgba(240,185,11,.35); padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: .4px; }
+  header h1 { font-size: 27px; margin: 12px 0 6px; }
+  header h1 span { color: var(--gold); }
+  header p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+  .stats .num { font-size: 24px; font-weight: 700; }
+  .stats .lbl { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  button { width: 100%; border: 0; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  #btn-connect { background: #1d2639; color: var(--text); border: 1px solid var(--line); }
+  #btn-checkin { background: var(--gold); color: #191104; margin-top: 10px; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  #wallet-line { text-align: center; color: var(--muted); font-size: 13px; margin-top: 10px; word-break: break-all; }
+  #agentid-line { text-align: center; font-size: 13.5px; margin-top: 6px; }
+  #msg { text-align: center; font-size: 14px; margin-top: 12px; min-height: 20px; line-height: 1.5; }
+  #msg.ok { color: var(--green); } #msg.err { color: var(--red); }
+  h2 { font-size: 16px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.addr { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+  tr.me td { color: var(--gold); font-weight: 600; }
+  .note { color: var(--muted); font-size: 12.5px; margin-top: 10px; line-height: 1.55; }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; line-height: 1.7; margin-top: 18px; }
+  footer a, .note a { color: var(--gold); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="badge">BINANCE AGENT ID HACKATHON</div>
+    <h1>Sexter Daily <span>Check-In</span></h1>
+    <p>Check-in harian on-chain khusus pemegang <b>SPACE ID Agent ID</b> di BNB Chain.
+       Setiap check-in tercatat di blockchain — bangun streak, puncaki leaderboard.
+       Gratis, cuma bayar gas.</p>
+  </header>
+
+  <div class="card">
+    <div class="stats">
+      <div><div class="num" id="stat-streak">–</div><div class="lbl">Streak kamu</div></div>
+      <div><div class="num" id="stat-total">–</div><div class="lbl">Total check-in kamu</div></div>
+      <div><div class="num" id="stat-users">–</div><div class="lbl">Total peserta</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <button id="btn-connect">Hubungkan Wallet</button>
+    <button id="btn-checkin" disabled>Check-in hari ini</button>
+    <div id="wallet-line">Wallet belum terhubung.</div>
+    <div id="agentid-line"></div>
+    <div id="msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Leaderboard — streak tertinggi</h2>
+    <table>
+      <thead><tr><th>#</th><th>Wallet</th><th>Streak</th><th>Total</th></tr></thead>
+      <tbody id="lb-body"><tr><td colspan="4">Memuat…</td></tr></tbody>
+    </table>
+    <p class="note" id="lb-note"></p>
+  </div>
+
+  <div class="card">
+    <h2>Cara ikut</h2>
+    <p class="note">
+      1. Pegang Agent ID (SPACE ID) di wallet kamu.<br />
+      2. Hubungkan wallet di halaman ini (jaringan BNB Smart Chain).<br />
+      3. Klik <b>Check-in hari ini</b> — satu kali per hari (UTC).<br />
+      4. Balik lagi besok supaya streak tidak putus. Bolong sehari, streak mulai lagi dari 1.
+    </p>
+  </div>
+
+  <footer>
+    Dibangun oleh <b>sexter.ai</b> untuk Binance Agent ID Hackathon.<br />
+    Kontrak: <a id="contract-link" href="#" target="_blank" rel="noopener">BscScan</a> ·
+    Source code terverifikasi &amp; open source.<br />
+    Kontrak immutable — tanpa admin, tanpa fee, tanpa janji hadiah token.
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
